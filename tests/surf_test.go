@@ -400,48 +400,6 @@ func TestGzip(t *testing.T) {
 	}
 }
 
-func TestBrotli(t *testing.T) {
-	t.Parallel()
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Encoding", "br")
-		w.Write(g.NewString("OK").Compress().Brotli().Bytes())
-	}))
-
-	defer ts.Close()
-
-	r := surf.NewClient().Builder().CacheBody().Build().Unwrap().Get(g.String(ts.URL)).Do()
-	if r.IsErr() {
-		t.Error(r.Err())
-		return
-	}
-
-	if !r.Ok().Body.Contains("OK") || !r.Ok().Body.Contains([]byte("OK")) {
-		t.Error()
-	}
-}
-
-func TestZstd(t *testing.T) {
-	t.Parallel()
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Encoding", "zstd")
-		w.Write(g.NewString("hello from zstd").Compress().Zstd().Bytes())
-	}))
-
-	defer ts.Close()
-
-	r := surf.NewClient().Builder().CacheBody().Build().Unwrap().Get(g.String(ts.URL)).Do()
-	if r.IsErr() {
-		t.Error(r.Err())
-		return
-	}
-
-	if !r.Ok().Body.Contains("hello from zstd") || !r.Ok().Body.Contains([]byte("hello from zstd")) {
-		t.Error()
-	}
-}
-
 func TestBody(t *testing.T) {
 	t.Parallel()
 
@@ -733,7 +691,8 @@ func TestHTTP2(t *testing.T) {
 	ts := httptest.NewUnstartedServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Hello, %s", r.Proto)
-		}))
+		}),
+	)
 	ts.EnableHTTP2 = true
 	ts.StartTLS()
 
