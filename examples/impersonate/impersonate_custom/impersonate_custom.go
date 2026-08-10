@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/rand"
 	"github.com/enetx/http2"
 	"github.com/enetx/surf"
 )
@@ -52,7 +53,7 @@ func main() {
 
 	b := g.NewBuilder()
 	b.WriteString("-------SurfFormBoundary")
-	b.WriteString(g.ASCII_LETTERS.Random(7))
+	b.WriteString(rand.String(7, g.ASCIILetters))
 
 	cli := surf.NewClient().
 		Builder().

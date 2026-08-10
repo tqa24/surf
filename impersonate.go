@@ -2,6 +2,7 @@ package surf
 
 import (
 	"github.com/enetx/g"
+	"github.com/enetx/g/rand"
 	"github.com/enetx/surf/profiles"
 	"github.com/enetx/surf/profiles/chrome"
 	"github.com/enetx/surf/profiles/firefox"
@@ -14,7 +15,8 @@ type Impersonate struct {
 
 // RandomOS selects a random OS (Windows, macOS, Linux, Android, or iOS) for the impersonate.
 func (im *Impersonate) RandomOS() *Impersonate {
-	im.os = g.SliceOf(profiles.Windows, profiles.MacOS, profiles.Linux, profiles.Android, profiles.IOS).Random()
+	im.os = rand.Choice(g.SliceOf(profiles.Windows, profiles.MacOS, profiles.Linux, profiles.Android, profiles.IOS)).
+		Some()
 	return im
 }
 

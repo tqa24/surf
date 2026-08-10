@@ -51,7 +51,7 @@ func main() {
 		}
 	}
 
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Add(1)
 
 		min := chunkSize * i
@@ -128,10 +128,10 @@ func main() {
 
 func sortFiles(files []string) {
 	sort.Slice(files, func(i, j int) bool {
-		a := strings.Split(filepath.Base(files[i]), ".")[0]
+		a, _, _ := strings.Cut(filepath.Base(files[i]), ".")
 		ai, _ := strconv.Atoi(a)
 
-		b := strings.Split(filepath.Base(files[j]), ".")[0]
+		b, _, _ := strings.Cut(filepath.Base(files[j]), ".")
 		bi, _ := strconv.Atoi(b)
 		return ai < bi
 	})

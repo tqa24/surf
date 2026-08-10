@@ -63,7 +63,7 @@ func decodeBodyMW(r *Response) error {
 		return nil
 	}
 
-	for enc := range encoding.Split(",") {
+	for _, enc := range encoding.Split(",") {
 		var reader g.Result[io.ReadCloser]
 		source := r.Body.Reader
 

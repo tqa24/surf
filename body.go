@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/surf/pkg/sse"
 	"golang.org/x/net/html/charset"
 )
@@ -321,14 +322,14 @@ func (b *Body) Dump(filename g.String) error {
 			return content.Err()
 		}
 
-		return g.NewFile(filename).Write(content.Ok().String()).Err()
+		return fs.NewFile(filename).Write(content.Ok().String()).Err()
 	}
 
 	defer b.Close()
 
 	b.setupContextCancel()
 
-	return g.NewFile(filename).WriteFromReader(b.Reader).Err()
+	return fs.NewFile(filename).WriteFromReader(b.Reader).Err()
 }
 
 // Contains checks if the body's content contains the provided pattern (byte slice, string, or
@@ -353,7 +354,7 @@ func (b *Body) Contains(pattern any) bool {
 	case g.String:
 		return r.Ok().String().Lower().Contains(p.Lower())
 	case *regexp.Regexp:
-		return r.Ok().String().Regexp().Match(p)
+		return p.Match(r.Ok())
 	}
 
 	return false

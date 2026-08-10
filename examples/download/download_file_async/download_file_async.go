@@ -9,6 +9,7 @@ import (
 
 	"github.com/enetx/g"
 	"github.com/enetx/g/cmp"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/g/pool"
 	"github.com/enetx/surf"
 )
@@ -36,7 +37,7 @@ func main() {
 		diff      = contentLength.Ok() % tasks
 	)
 
-	p := pool.New[*g.File]().Limit(10)
+	p := pool.New[*fs.File]().Limit(10)
 
 	for task := range tasks {
 		min := chunkSize * task
@@ -46,7 +47,7 @@ func main() {
 			max += diff
 		}
 
-		p.Go(func() g.Result[*g.File] {
+		p.Go(func() g.Result[*fs.File] {
 			headers := g.Map[g.String, g.String]{"Range": g.Format("bytes={}-{}", min, max-1)}
 
 			r := surf.NewClient().
@@ -60,10 +61,10 @@ func main() {
 
 			if r.IsErr() {
 				p.Cancel(r.Err())
-				return g.Err[*g.File](r.Err())
+				return g.Err[*fs.File](r.Err())
 			}
 
-			tmpFile := g.NewFile("").CreateTemp("", task.String()+".")
+			tmpFile := fs.CreateTempFile("", task.String()+".")
 			if tmpFile.IsErr() {
 				p.Cancel(tmpFile.Err())
 				return tmpFile
@@ -71,28 +72,28 @@ func main() {
 
 			if err := r.Ok().Body.Dump(tmpFile.Ok().Path().Ok()); err != nil {
 				p.Cancel(err)
-				return g.Err[*g.File](err)
+				return g.Err[*fs.File](err)
 			}
 
 			return tmpFile
 		})
 	}
 
-	result := p.Wait().Collect()
+	result := p.Wait().Collect().Slice()
 
 	if err := p.Cause(); err != nil && !errors.Is(err, pool.ErrAllTasksDone) {
 		log.Fatal(err)
 	}
 
-	result.SortBy(func(a, b g.Result[*g.File]) cmp.Ordering {
-		an := a.Ok().Name().Split(".").Take(1).Collect()[0]
-		bn := b.Ok().Name().Split(".").Take(1).Collect()[0]
+	result.SortBy(func(a, b g.Result[*fs.File]) cmp.Ordering {
+		an := a.Ok().Name().Split(".")[0]
+		bn := b.Ok().Name().Split(".")[0]
 		return an.Cmp(bn)
 	})
 
 	buffer := g.NewBuilder()
 
-	result.Iter().ForEach(func(v g.Result[*g.File]) {
+	result.Iter().ForEach(func(v g.Result[*fs.File]) {
 		defer v.Ok().Remove()
 		buffer.WriteString(v.Ok().Read().Ok())
 	})
@@ -102,5 +103,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	g.NewFile(g.String(path.Base(pURL.Path))).Write(buffer.String())
+	fs.NewFile(g.String(path.Base(pURL.Path))).Write(buffer.String())
 }

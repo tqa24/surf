@@ -3,10 +3,10 @@ package surf
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/textproto"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/rand"
 	"github.com/enetx/http/httptrace"
 	"github.com/enetx/surf/header"
 )
@@ -30,33 +30,29 @@ func defaultUserAgentMW(req *Request) error {
 // - g.Slice[g.String]: Randomly selects from g.String slice
 // Returns an error for unsupported types or empty slices.
 func userAgentMW(req *Request, userAgent any) error {
-	var ua string
+	var pool []g.String
 
 	switch v := userAgent.(type) {
 	case string:
-		ua = v
+		pool = []g.String{g.String(v)}
 	case g.String:
-		ua = v.Std()
+		pool = []g.String{v}
 	case []string:
-		if len(v) == 0 {
-			return &ErrUserAgentType{"cannot select a random user agent from an empty slice"}
-		}
-		ua = v[rand.Intn(len(v))]
+		pool = g.TransformSlice(v, g.NewString)
 	case g.Slice[string]:
-		if v.IsEmpty() {
-			return &ErrUserAgentType{"cannot select a random user agent from an empty slice"}
-		}
-		ua = v.Random()
+		pool = g.TransformSlice(v, g.NewString)
 	case g.Slice[g.String]:
-		if v.IsEmpty() {
-			return &ErrUserAgentType{"cannot select a random user agent from an empty slice"}
-		}
-		ua = v.Random().Std()
+		pool = v
 	default:
 		return &ErrUserAgentType{fmt.Sprintf("'%T' %v", v, v)}
 	}
 
-	req.GetRequest().Header.Set(header.USER_AGENT, ua)
+	ua := rand.Choice(pool)
+	if ua.IsNone() {
+		return &ErrUserAgentType{"cannot select a random user agent from an empty slice"}
+	}
+
+	req.GetRequest().Header.Set(header.USER_AGENT, ua.Some().Std())
 
 	return nil
 }

@@ -332,12 +332,10 @@ func updateRequestHeaderOrder[T ~string](r *Request, h g.MapOrd[T, T]) g.MapOrd[
 		}
 	}
 
-	headersKeys := h.Iter().
+	headers, pheaders := h.Iter().
 		Keys().
 		Map(func(s T) string { return string(g.String(s).Lower()) }).
-		Collect()
-
-	headers, pheaders := headersKeys.Iter().Partition(func(v string) bool { return v[0] != ':' })
+		Partition(func(v string) bool { return v[0] != ':' })
 
 	if !headers.IsEmpty() {
 		r.request.Header[http.HeaderOrderKey] = headers
@@ -349,5 +347,5 @@ func updateRequestHeaderOrder[T ~string](r *Request, h g.MapOrd[T, T]) g.MapOrd[
 
 	return h.Iter().
 		Filter(func(header, data T) bool { return header[0] != ':' && len(data) != 0 }).
-		Collect()
+		Collect().MapOrd[T, T]()
 }

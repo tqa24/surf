@@ -26,7 +26,7 @@ func (cs Cookies) Contains(pattern any) bool {
 				return true
 			}
 		case *regexp.Regexp:
-			if c.Regexp().Match(p) {
+			if p.Match(c.Bytes()) {
 				return true
 			}
 		}

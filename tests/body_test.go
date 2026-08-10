@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/http"
 	"github.com/enetx/http/httptest"
 	"github.com/enetx/surf"
@@ -419,13 +420,13 @@ func TestBodyDump(t *testing.T) {
 	}
 
 	// Read dumped content
-	content := g.NewFile(tempFile).Read().UnwrapOrDefault()
+	content := fs.NewFile(tempFile).Read().UnwrapOrDefault()
 	if content != "dump content" {
 		t.Errorf("expected 'dump content', got %s", content)
 	}
 
 	// Clean up
-	g.NewFile(tempFile).Remove()
+	fs.NewFile(tempFile).Remove()
 }
 
 func TestBodyDumpNil(t *testing.T) {

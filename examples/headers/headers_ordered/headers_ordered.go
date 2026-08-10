@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/surf"
 	"github.com/enetx/surf/header"
 )
@@ -32,7 +33,7 @@ func main() {
 	oh.Insert(header.HOST, "")
 	oh.Insert("4", "4")
 
-	reader := g.NewFile("headers_ordered.go").Reader().Unwrap()
+	reader := fs.NewFile("headers_ordered.go").Reader().Unwrap()
 
 	r := surf.NewClient().
 		Builder().

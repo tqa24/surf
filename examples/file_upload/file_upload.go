@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/surf"
 )
 
@@ -10,7 +10,7 @@ func main() {
 
 	// With physical file
 	mp := surf.NewMultipart().
-		File("filefield", g.NewFile("/path/to/file.txt"))
+		File("filefield", fs.NewFile("/path/to/file.txt"))
 
 	surf.NewClient().
 		Post(URL).
@@ -37,7 +37,7 @@ func main() {
 		Field("your-name", "name").
 		Field("retreat", "P48").
 		Field("your-message", "message").
-		File("filefield", g.NewFile("/path/to/file.txt"))
+		File("filefield", fs.NewFile("/path/to/file.txt"))
 
 	surf.NewClient().
 		Post(URL).

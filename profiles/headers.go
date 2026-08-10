@@ -75,7 +75,7 @@ func buildHeaderEnums(order g.Map[string, g.Slice[string]]) g.Map[string, g.MapO
 
 	for method, headers := range order {
 		h := g.NewMapOrd[string, g.Int]()
-		headers.Iter().Enumerate().Collect().Iter().
+		headers.Iter().Enumerate().
 			ForEach(func(k g.Int, v string) {
 				h.Insert(v, k)
 			})

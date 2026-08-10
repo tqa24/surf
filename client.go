@@ -326,7 +326,7 @@ func isFormEncoded(s g.String) bool {
 
 	pairs := s.Split("&")
 
-	for pair := range pairs {
+	for _, pair := range pairs {
 		if pair.IsEmpty() {
 			return false
 		}

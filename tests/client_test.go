@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/http"
 	"github.com/enetx/http/httptest"
 	"github.com/enetx/surf"
@@ -749,7 +750,7 @@ func TestClientInvalidRequests(t *testing.T) {
 	}
 
 	// Test multipart with non-existent file
-	mp := surf.NewMultipart().File("field", g.NewFile("/non/existent/file.txt"))
+	mp := surf.NewMultipart().File("field", fs.NewFile("/non/existent/file.txt"))
 	resp = client.Post("http://localhost:9999").Multipart(mp).Do()
 	if !resp.IsErr() {
 		t.Error("expected error for non-existent file")

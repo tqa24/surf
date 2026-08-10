@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/surf"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	// Multipart with physical file
 	mp2 := surf.NewMultipart().
 		Field("description", "My document").
-		File("upload", g.NewFile("multipart.go"))
+		File("upload", fs.NewFile("multipart.go"))
 
 	surf.NewClient().
 		Post(URL).

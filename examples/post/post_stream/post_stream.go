@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 	"github.com/enetx/surf"
 )
 
@@ -66,7 +67,7 @@ func main() {
 	// 6. g.File (using Reader method)
 	fmt.Println("=== g.File.Reader ===")
 
-	gf := g.NewFile(g.String(tmpfile.Name()))
+	gf := fs.NewFile(g.String(tmpfile.Name()))
 	gf.Write("hello from g.File.Reader")
 
 	reader := gf.Reader().Unwrap()

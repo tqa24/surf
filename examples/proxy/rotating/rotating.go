@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/enetx/g"
 	"github.com/enetx/g/pool"
+	"github.com/enetx/g/rand"
 	"github.com/enetx/surf"
 )
 
@@ -24,7 +25,7 @@ func main() {
 		p.Go(
 			surf.NewClient().
 				Builder().
-				Proxy(ps.Random()).
+				Proxy(rand.Choice(ps).Some()).
 				Build().
 				Unwrap().
 				Get(url).Do,

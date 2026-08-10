@@ -15,8 +15,7 @@ func main() {
 	urls := g.SliceOf[g.String]("https://httpbingo.org/get").
 		Iter().
 		Cycle().
-		Take(100).
-		Collect()
+		Take(100)
 
 	pool := pool.New[*surf.Response]().Limit(10)
 
@@ -27,7 +26,7 @@ func main() {
 		Build().
 		Unwrap()
 
-	for _, URL := range urls {
+	for URL := range urls {
 		pool.Go(cli.Get(URL).Do)
 	}
 

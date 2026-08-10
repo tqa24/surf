@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/enetx/g"
+	"github.com/enetx/g/fs"
 )
 
 // Multipart represents multipart form data with fields and files.
@@ -23,7 +24,7 @@ type MultipartFile struct {
 	fieldName   g.String
 	fileName    g.String
 	contentType g.String
-	file        *g.File
+	file        *fs.File
 	reader      io.Reader
 }
 
@@ -42,7 +43,7 @@ func (m *Multipart) Field(name, value g.String) *Multipart {
 }
 
 // File adds a physical file to the multipart.
-func (m *Multipart) File(fieldName g.String, file *g.File) *Multipart {
+func (m *Multipart) File(fieldName g.String, file *fs.File) *Multipart {
 	f := &MultipartFile{
 		fieldName: fieldName,
 		fileName:  file.Name(),
